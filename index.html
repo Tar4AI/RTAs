@@ -130,14 +130,6 @@
       </div>
 
       <div class="row" style="margin-top:8px">
-        <label>FFT Size
-          <select id="fft">
-            <option value="2048">2048</option>
-            <option value="4096" selected>4096</option>
-            <option value="8192">8192</option>
-            <option value="16384">16384</option>
-          </select>
-        </label>
         <label> Smoothing <input id="smoothing" type="range" min="0" max="0.95" step="0.01" value="0.75"></label>
         <label> Averaging <input id="avg" type="checkbox" checked></label>
         <label> A-weighting (เดโม่) <input id="aWeight" type="checkbox"></label>
@@ -165,10 +157,23 @@
     <div class="meters">
       <div class="card">
         <div class="row" style="justify-content:space-between;align-items:center;">
-          <b>RTA แบบละเอียด (FFT, Log Frequency)</b>
-          <div class="badges">
+          <div class="row">
+            <b>RTA แบบ FFT - Log</b>
+          </div>
+          <div class="badges" style="margin-left: auto; margin-right: auto;">
             <span class="badge" id="fftPeakText">Peak: —</span>
             <span class="badge" id="fftHoldText" style="display:none;">Hold: —</span>
+          </div>
+          <div class="row">
+            <label>FFT Size
+              <input id="fftRangeSlider" type="range" min="0" max="3" step="1" value="1">
+              <select id="fftSizePreset">
+                <option value="2048">2048</option>
+                <option value="4096" selected>4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+              </select>
+            </label>
           </div>
         </div>
         <div class="plot">
@@ -281,6 +286,7 @@
         this.HEATMAP_TIME_SLICES = 200;
         this.HEATMAP_BINS_HD = 300;
         this.HEATMAP_BINS_SD = 60;
+        this.FFT_SIZES = [2048, 4096, 8192, 16384];
 
         this.dom = this.getDOMElements();
         this.colors = {};
@@ -322,7 +328,7 @@
       getDOMElements() {
         const ids = [
           'btnStart', 'btnStop', 'btnHold', 'btnClear', 'btnToggleHeatmap', 'btnHeatmapQuality', 'btnResetDba', 'btnClearAth',
-          'fft', 'smoothing', 'avg', 'aWeight', 'ec', 'ns', 'agc', 'themeSelector',
+          'fftSizePreset', 'smoothing', 'avg', 'aWeight', 'ec', 'ns', 'agc', 'themeSelector', 'fftRangeSlider',
           'fftPeakText', 'fftHoldText', 'octPeakText', 'octHoldText', 'heatmapAthText',
           'fftCanvas', 'octCanvas', 'heatmapCanvas', 'dbMeterCanvas',
           'fftTip', 'octTip', 'heatmapTip',
@@ -376,7 +382,19 @@
 
         this.dom.themeSelector.addEventListener('change', (e) => this.applyTheme(e.target.value));
 
-        this.dom.fft.addEventListener('change', () => this.onConfigChange());
+        this.dom.fftSizePreset.addEventListener('change', (e) => {
+            const selectedValue = e.target.value;
+            const index = this.FFT_SIZES.indexOf(parseInt(selectedValue, 10));
+            this.dom.fftRangeSlider.value = index;
+            this.onConfigChange();
+        });
+        this.dom.fftRangeSlider.addEventListener('input', (e) => {
+            const index = parseInt(e.target.value, 10);
+            const fftSize = this.FFT_SIZES[index];
+            this.dom.fftSizePreset.value = fftSize;
+            this.onConfigChange();
+        });
+        
         this.dom.smoothing.addEventListener('input', () => {
           if (this.state.analyser) this.state.analyser.smoothingTimeConstant = parseFloat(this.dom.smoothing.value);
         });
@@ -412,8 +430,8 @@
             this.dom.heatmapRangeSlider.value = this.state.heatmapRangeMax;
             this.updateHeatmapRangeText();
         });
-        this.dom.heatmapRangeSlider.addEventListener('input', (e) => {
-            this.state.heatmapRangeMax = parseInt(e.target.value, 10);
+        this.dom.heatmapRangeSlider.addEventListener('input', () => {
+            this.state.heatmapRangeMax = parseInt(this.dom.heatmapRangeSlider.value, 10);
             this.updateHeatmapRangeText();
         });
         
@@ -529,7 +547,7 @@
       
       onConfigChange() {
           if (!this.state.analyser) return;
-          this.state.analyser.fftSize = parseInt(this.dom.fft.value, 10);
+          this.state.analyser.fftSize = parseInt(this.dom.fftSizePreset.value, 10);
           this.state.analyser.smoothingTimeConstant = parseFloat(this.dom.smoothing.value);
           
           this.state.dataArray = new Uint8Array(this.state.analyser.fftSize);
