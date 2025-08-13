@@ -47,7 +47,7 @@
       --frame:rgba(255,250,235,.12); --label:rgba(255,250,235,.7);
       --fft:#F59E0B; --peak:#FDE68A; --hold:#FDBA74; --bar:#F59E0B;
       --heatmap-color-1:#292524; --heatmap-color-2:#78716C; --heatmap-color-3:#F59E0B;
-      --heatmap-color-4:#EF4444; --heatmap-color-5:#FBBF24;
+      --heatmap-color-4:#FBBF24; --heatmap-color-5:#EF4444; /* Swapped red to be the loudest */
       --dba-meter-bg-green: #F59E0B;
       --dba-meter-bg-yellow: #FACC15;
       --dba-meter-bg-orange: #FB923C;
@@ -179,7 +179,7 @@
 
       <div class="card">
         <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:2px">
-          <b id="octTitle">RTA แบบ 1/12 Octave (Linear Axis)</b>
+          <b id="octTitle">RTA แบบ 1/12 Octave (Linear)</b>
           <div class="row">
             <label style="display:flex;align-items:center;gap:6px">Range (dbFS)
               <input id="octRangeSlider" type="range" min="64" max="1023" step="1" value="255" aria-label="Octave bar range">
@@ -190,15 +190,15 @@
               </select>
             </label>
             <span class="hint" id="octRangeText">0–255</span>
-            <span class="row" style="gap:10px;align-items:center; margin-left: auto;">
-              <label>Octave
-                <select id="octRes">
-                  <option value="3">1/3</option>
-                  <option value="6">1/6</option>
-                  <option value="12" selected>1/12</option>
-                </select>
-              </label>
-            </span>
+          </div>
+          <div class="row" style="justify-content:flex-end;">
+            <label>Octave
+              <select id="octRes">
+                <option value="3">1/3</option>
+                <option value="6">1/6</option>
+                <option value="12" selected>1/12</option>
+              </select>
+            </label>
           </div>
         </div>
         <div class="badges">
@@ -591,7 +591,7 @@
           if (fh < fmin || fl > fm) continue;
           arr.push({ fc, fl: Math.max(fl, fmin), fh: Math.min(fh, fm) });
         }
-        if (arr.length) this.dom.octTitle.textContent = `RTA แบบ 1/${n} Octave (Linear Axis)`;
+        if (arr.length) this.dom.octTitle.textContent = `RTA แบบ 1/${n} Octave (Linear)`;
         return arr;
       }
 
