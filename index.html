@@ -805,8 +805,12 @@ html, body { overflow-x: hidden; } /* prevent accidental horizontal scrollbars i
           const analyser=audioCtx.createAnalyser(); const micSrc=audioCtx.createMediaStreamSource(stream); micSrc.connect(analyser);
 
           this.state={...this.state,audioCtx,analyser,micSrc,stream,running:true,demo:{...this.state.demo,enabled:false}};
-          this.onConfigChange(); this.resetDbaValues();
-          this.dom.errBox.style.display='none'; this.dom.btnStop.disabled=false; this.syncFloating(); this.loop();
+          this.onConfigChange();
+          this.resetDbaValues();
+          this.dom.errBox.style.display='none';
+          this.dom.btnStop.disabled=false;
+          this.syncFloating();
+          this.loop();
         }catch(err){ console.error(err); this.showError(err.message||String(err)); this.dom.btnStart.disabled=false; this.syncFloating(); }
       }
       async startDemo(){
@@ -965,4 +969,4 @@ html, body { overflow-x: hidden; } /* prevent accidental horizontal scrollbars i
   })();
   </script>
 </body>
-</html
+</html>
